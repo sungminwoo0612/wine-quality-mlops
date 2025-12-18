@@ -1,36 +1,37 @@
 name: MLOps-CML-Report
 on: [push]
+permissions: write-all  # <--- [중요] 이 줄이 추가되어야 봇이 댓글을 쓸 수 있습니다!
+
 jobs:
   run:
     runs-on: ubuntu-latest
-    # CML 기능이 포함된 Docker 이미지 사용
     container: docker://ghcr.io/iterative/cml:0-dvc2-base1
     steps:
       - uses: actions/checkout@v3
       
-      # 1. 환경 설정
       - name: Train model
         run: |
           pip install -r requirements.txt
-          
-          # DVC 파이프라인 실행 (데이터 변경/파라미터 변경 시 재학습)
           dvc repro
 
-      # 2. CML 리포트 생성 및 전송
       - name: Create CML Report
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 마크다운 리포트 작성
+          # 1. 마크다운 리포트 작성
           echo "## 📊 Model Performance Report" > report.md
           
-          # 메트릭 추가
+          # 2. 메트릭 추가
           echo "### Metrics" >> report.md
           cat metrics.json >> report.md
           
-          # Confusion Matrix 이미지 추가
+          # 3. Confusion Matrix 이미지 추가 (최신 문법 적용)
           echo "### Confusion Matrix" >> report.md
-          cml-publish confusion_matrix.png --md >> report.md
+          # 구버전: cml-publish ...
+          # 신버전: 아래처럼 마크다운 문법으로 이미지를 넣으면 CML이 알아서 업로드합니다.
+          echo "![Confusion Matrix](./confusion_matrix.png)" >> report.md
           
-          # Git Commit에 댓글 달기
-          cml-send-comment report.md
+          # 4. 리포트 전송 (최신 문법 적용)
+          # 구버전: cml-send-comment report.md
+          # 신버전: cml comment create report.md
+          cml comment create report.md
