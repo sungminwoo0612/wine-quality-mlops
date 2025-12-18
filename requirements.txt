@@ -3,3 +3,4 @@ scikit-learn
 dvc
 matplotlib
 seaborn
+wandb

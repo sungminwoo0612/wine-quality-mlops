@@ -1,6 +1,6 @@
 name: MLOps-CML-Report
 on: [push]
-permissions: write-all  # <--- [중요] 이 줄이 추가되어야 봇이 댓글을 쓸 수 있습니다!
+permissions: write-all
 
 jobs:
   run:
@@ -10,6 +10,8 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Train model
+        env:
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: |
           pip install -r requirements.txt
           dvc repro
@@ -35,3 +37,6 @@ jobs:
           # 구버전: cml-send-comment report.md
           # 신버전: cml comment create report.md
           cml comment create report.md
+
+          # 5. W&B 실험 결과
+          echo "[W&B 실험 결과 보러가기](https://wandb.ai/sungminwoo/wine-quality-mlops)" >> report.md
