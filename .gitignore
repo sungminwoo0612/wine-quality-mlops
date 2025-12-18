@@ -5,6 +5,7 @@ __pycache__/
 env/
 venv/
 *.so
+.env
 
 # 2. IDE & OS Settings (편집기 및 운영체제 파일)
 .vscode/
