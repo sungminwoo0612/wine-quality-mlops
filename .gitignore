@@ -1,0 +1,38 @@
+# 1. Python & Virtual Environment (기본 설정)
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+*.so
+
+# 2. IDE & OS Settings (편집기 및 운영체제 파일)
+.vscode/
+.idea/
+.DS_Store
+
+# 3. DVC Core (DVC 내부 캐시 및 로컬 설정)
+.dvc/tmp/
+.dvc/cache/
+.dvc/config.local
+# .dvc/config.local에는 AWS 키 등 민감 정보가 들어갈 수 있으므로 필수 무시
+
+# 4. Project Outputs (Git이 아닌 DVC가 관리하거나, 자동 생성되는 파일들)
+
+# === /data/와 model.pkl을 왜 넣나요? ===
+# 이 파일들은 DVC가 관리해야 할 대용량 파일이거나 실행 결과물입니다. 
+# 실수로 Git에 push 되는 것을 막기 위해 여기에 등록합니다.
+# 대신 dvc.yaml과 dvc.lock 파일이 이 파일들의 상태(해시값)를 Git에 기록해 줍니다.
+
+# 데이터 폴더 (prepare.py가 생성하므로 Git은 무시)
+/data/
+
+# 학습된 모델 (대용량 바이너리이므로 Git 무시 -> DVC가 관리)
+model.pkl
+
+# 평가 결과물 (매 실행마다 바뀌므로 Git에 넣지 않음, 필요시 DVC가 추적 가능)
+metrics.json
+confusion_matrix.png
+
+# CML이 생성하는 리포트 파일
+report.md

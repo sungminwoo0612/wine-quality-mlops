@@ -1,0 +1,32 @@
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+    outs:
+      - data/train.csv
+      - data/test.csv
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/train.csv
+    params:
+      - train.n_estimators
+      - train.max_depth
+    outs:
+      - model.pkl
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - model.pkl
+      - data/test.csv
+    metrics:
+      - metrics.json:
+          cache: false
+    plots:
+      - confusion_matrix.png:
+          cache: false
