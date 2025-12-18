@@ -1,0 +1,36 @@
+name: MLOps-CML-Report
+on: [push]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    # CML 기능이 포함된 Docker 이미지 사용
+    container: docker://ghcr.io/iterative/cml:0-dvc2-base1
+    steps:
+      - uses: actions/checkout@v3
+      
+      # 1. 환경 설정
+      - name: Train model
+        run: |
+          pip install -r requirements.txt
+          
+          # DVC 파이프라인 실행 (데이터 변경/파라미터 변경 시 재학습)
+          dvc repro
+
+      # 2. CML 리포트 생성 및 전송
+      - name: Create CML Report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 마크다운 리포트 작성
+          echo "## 📊 Model Performance Report" > report.md
+          
+          # 메트릭 추가
+          echo "### Metrics" >> report.md
+          cat metrics.json >> report.md
+          
+          # Confusion Matrix 이미지 추가
+          echo "### Confusion Matrix" >> report.md
+          cml-publish confusion_matrix.png --md >> report.md
+          
+          # Git Commit에 댓글 달기
+          cml-send-comment report.md
